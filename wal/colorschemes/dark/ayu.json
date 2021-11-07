@@ -1,0 +1,29 @@
+{
+    "wallpaper": "/home/tony/Pictures/wallpapers/sunset.jpg",
+    "alpha": "100",
+
+    "special": {
+        "background": "#0f1419",
+        "foreground": "#c4bc9b",
+        "cursor": "#c4bc9b"
+    },
+    "colors": {
+        "color0": "#0f1419", 
+        "color1": "#cc2525", 
+        "color2": "#9bb02e",
+        "color3": "#f29718", 
+        "color4": "#36a3d9", 
+        "color5": "#b81c6a", 
+        "color6": "#67d6b1", 
+        "color7": "#c4bc9b", 
+        "color8": "#3e4b59", 
+        "color9": "#ff3333", 
+        "color10": "#9bb02e", 
+        "color11": "#f29718", 
+        "color12": "#36a3d9", 
+        "color13": "#ff3399", 
+        "color14": "#95e6cb", 
+        "color15": "#5c6773"
+    }
+}
+

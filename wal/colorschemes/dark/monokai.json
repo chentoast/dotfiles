@@ -1,0 +1,28 @@
+{
+    "wallpaper": "/home/tony/Pictures/wallpapers/japan_street.jpg",
+    "alpha": "100",
+
+    "special": {
+        "background": "#272722",
+        "foreground": "#f8f8f2",
+        "cursor": "#f8f8f2"
+    },
+    "colors": {
+        "color0": "#272822", 
+        "color1": "#db0928", 
+        "color2": "#86b823", 
+        "color3": "#ff7e00", 
+        "color4": "#37b1d4", 
+        "color5": "#AE81FF", 
+        "color6": "#1583d1", 
+        "color7": "#F8F8F2", 
+        "color8": "#75715E", 
+        "color9": "#F92672", 
+        "color10": "#86b823", 
+        "color11": "#ff7e00", 
+        "color12": "#66D9EF", 
+        "color13": "#AE81FF", 
+        "color14": "#A1EFE4", 
+        "color15": "#F9F8F5"
+    }
+}
