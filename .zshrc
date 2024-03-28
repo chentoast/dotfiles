@@ -4,19 +4,19 @@ setopt hist_ignore_space
 setopt auto_pushd
 setopt ignore_eof
 
-source ~/.zsh_plugins.sh
-
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
+
+source ~/.zsh_plugins.sh
+
+# Use modern completion system
+autoload -Uz compinit
+compinit
 
 # Keep 10000 lines of history within the shell and save it to ~/.zsh_history:
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
-
-# Use modern completion system
-autoload -Uz compinit
-compinit
 
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
@@ -39,6 +39,7 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/scripts
 export TERMINFO=/usr/share/terminfo
+export EDITOR="nvim"
 
 # history substring search
 bindkey "$terminfo[kcuu1]" history-substring-search-up
@@ -76,33 +77,24 @@ export SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 
 # Setup fzf
 # ---------
+if [[ ! "$PATH" == */home/tony/.local/apps/fzf/bin* ]]; then
+  export PATH="${PATH:+${PATH}:}/home/tony/.local/apps/fzf/bin"
+fi
 # Auto-completion
 # ---------------
-[[ $- == *i* ]] && source "/home/tony/.local/fzf/shell/completion.zsh" 2> /dev/null
+# [[ $- == *i* ]] && source "/home/tony/.local/apps/fzf/shell/completion.zsh" 2> /dev/null
+
+[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && source ~/.autojump/etc/profile.d/autojump.sh
+
 
 # Key bindings
 # ------------
-source "/home/tony/.local/fzf/shell/key-bindings.zsh"
+source "/home/tony/.local/apps/fzf/shell/key-bindings.zsh"
 
-export FZF_DEFAULT_OPTS="--layout=reverse --height 40% --multi"
+export FZF_DEFAULT_OPTS="--color='bg+:0,fg+:7:underline' --layout=reverse --height 40% --multi"
 export FZF_DEFAULT_COMMAND="fdfind"
 
-CONDA_AUTO_ACTIVATE_BASE=false
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/tony/.local/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/tony/.local/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/tony/.local/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/tony/.local/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+# export GEM_HOME="~/.local/gems"
 
 # user functions
 function light_or_dark {
@@ -117,33 +109,40 @@ function light_or_dark {
     b=$(echo "ibase=16; $b" | bc)
 
     # 0 for light, 1 for dark
-    return $(($r * $r + $g * $g + $b * $b > 16256.25))
-}
-
-HOSTNAME="$(hostname)"  # Conda clobbers HOST, so we save the real hostname into another variable.
-
-precmd() {
-    OLDHOST="${HOST}"
-    HOST="${HOSTNAME}"
-}
-
-preexec() {
-    HOST="${OLDHOST}"
+    return $(($r * .299 + $g * .587 + $b * .144 < 186))
 }
 
 # aliases
-alias vim=nvim
-alias ls=exa
+alias bat='batcat --theme="$(light_or_dark "$(head -2 ~/.cache/wal/colors | tail -1)" && echo github || echo OneHalfLight)"'
 alias fd=fdfind
-alias nv="nvim-nightly -u ${HOME}/.config/nvim/nightly.vim"
 alias gs="git status"
 alias ga="git add -u"
 alias gc="git commit"
+alias gd="git diff"
 alias gl="git log"
 alias gtmp="git commit -m 'tmp'"
+alias ls="exa --group-directories-first"
+alias nv="nvim-nightly -u ${HOME}/.config/nvim/nightly.vim"
+alias p="ipython"
+alias rm="rm -i"
+alias vim=nvim
 
-alias py="python3 -i -c 'import numpy as np; import matplotlib.pyplot as plt'"
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/tony/.local/apps/miniconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/tony/.local/apps/miniconda/etc/profile.d/conda.sh" ]; then
+        . "/home/tony/.local/apps/miniconda/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/tony/.local/apps/miniconda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 
-alias bat=bat --theme="$(light_or_dark "$(head -2 ~/.cache/wal/colors | tail -1)" && echo github || echo OneHalfLight)"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

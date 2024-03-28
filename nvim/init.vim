@@ -1,35 +1,36 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
-" Plug 'jpalardy/vim-slime'
 Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-commentary'
 Plug 'justinmk/vim-dirvish'
 Plug 'junegunn/fzf.vim'
-Plug 'JuliaEditorSupport/julia-vim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'phaazon/hop.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'karb94/neoscroll.nvim'
+Plug 'andrewferrier/debugprint.nvim'
+" Plug 'kevinhwang91/promise-async'
+" Plug 'kevinhwang91/nvim-ufo'
 " Plug 'chentau/marks.nvim'
-" Plug 'kshenoy/vim-signature'
-" Plug 'nvim-telescope/telescope.nvim'
 " Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
 
 call plug#end()
 
 "==================plugin settings==================
 let mapleader=","
 
-set rtp+=~/.local/fzf
-set rtp+=~/repos/todolist.nvim
+set rtp+=~/.local/apps/fzf
+" set rtp+=~/repos/bracket_pair_colorizer.nvim
 set rtp+=~/repos/marks.nvim
-set rtp+=~/repos/live.nvim
+" set rtp+=~/repos/live.nvim
 
 lua <<EOF
 -- require'live'.setup()
 -- require'marks'.setup {}
 require'marks'.setup {
   builtin_marks = {},
+--  builtin_marks = {"."},
   mappings = {
     next_bookmark1 = "]]",
     prev_bookmark1 = "[[",
@@ -38,16 +39,28 @@ require'marks'.setup {
   bookmark_1 = {
     sign = "⚑",
     -- virt_text="   ⚑ bookmark"
-    virt_text = nil
+    virt_text = nil,
   },
   sign_priority = {
     upper = 15,
     lower = 12,
     bookmark = 5
     },
-  excluded_filetypes = {"text"}
+  excluded_filetypes = {"text"},
+  refresh_interval = 250,
 }
 
+require'debugprint'.setup {
+  create_keymaps = false
+}
+
+vim.keymap.set("n", "<leader>db", function()
+  return require'debugprint'.debugprint()
+  end, {expr = true})
+
+vim.keymap.set("n", "<leader>dq", function()
+  return require'debugprint'.debugprint({variable = true})
+  end, {expr = true})
 
 require'nvim-treesitter.configs'.setup {
   highlight = {
@@ -62,15 +75,20 @@ require'nvim-treesitter.configs'.setup {
       }
   }
 }
+
+-- require'ufo'.setup({
+--   provider_selector = function()
+--     return nil
+--   end,
+--   open_fold_hl_timeout = 0,
+-- })
+
 require'hop'.setup {teasing=false}
 
 require'indent_blankline'.setup {
   char="│",
   indent_level=5,
   show_trailing_blankline_indent=false,
-  show_current_context=true,
-  context_patterns = { "class", "function", "method",
-  "if_statement", "while_statement", "for_statement" }
 }
 
 require'neoscroll'.setup {
@@ -84,17 +102,14 @@ require'neoscroll.config'.set_mappings {
 }
 
 _G.P = function(...) print(vim.inspect(...)) end
-_G.D = function() print(vim.inspect(require'marks'.mark_state)) end
-_G.C = function() print(vim.inspect(require'marks'.bookmark_state)) end
 EOF
-
-let g:todo_keywords = ["TODO", "ON-HOLD", "WAITING", "IN-PROGRESS", "DONE"]
-let g:todo_tags = ["home", "school", "work", "appointment"]
 
 map <silent> <leader>w <cmd> lua require'hop'.hint_words()<cr>
 map <silent> <leader>l <cmd> lua require'hop'.hint_lines_skip_whitespace()<cr>
 map <silent> s <cmd> lua require'hop'.hint_char2()<cr>
 map <silent> <leader>t <cmd> lua require'hop'.hint_char1()<cr>
+
+" map <silent> <leader>T <Plug>PlenaryTestFile
 
 let g:fzf_preview_window = 'right:70%'
 
@@ -148,9 +163,9 @@ function! SetLatexSettings()
     execute 'setlocal norelativenumber'
     execute 'setlocal errorformat=%f:%l:\ %m'
     execute 'setlocal makeprg=rubber\ -d\ %'
-    inoremap <buffer> <leader>bb <esc>yiWi\begin{<esc>ea}<cr>\end{"}<esc>o<++><esc>kO
+    inoremap <buffer> <leader>bb <esc>yiWi\begin{<esc>Ea}<cr>\end{"}<esc>o<++><esc>kO
     inoremap <buffer> _{ _{}<++><esc>4<left>i
-    inoremap <buffer> ^{ _{}<++><esc>4<left>i
+    inoremap <buffer> ^{ ^{}<++><esc>4<left>i
     nnoremap <buffer><silent> <leader>m :call AsyncMake()<cr>
 endfunc
 
@@ -161,13 +176,15 @@ colorscheme wal
 
 "====================variable declarations====================
 filetype plugin indent on "load filetype-specific indent files and turns on filetype detection
-set tabstop=4 "number of spaces per tab
+set tabstop=2 "number of spaces per tab
 set softtabstop=2 "number of spaces per tab when editing
 set shiftwidth=2 "set shift width to four spaces
 set autoindent "pressing enter keeps tab spacing instead of moving cursor to beginning of line
 set expandtab
 
 set signcolumn=auto:9
+
+" set jumpoptions+=view
 
 " set showtabline=2
 
@@ -176,6 +193,11 @@ set splitbelow splitright " Change how splits open
 set lazyredraw " Run faster
 
 set hidden " switch between buffers without saving
+
+set formatoptions-=ro " disable comments on newlines
+
+set foldcolumn=1
+set foldmethod=manual
 
 function! ModeColor()
   let l:prefix="%#"
@@ -213,8 +235,8 @@ set statusline+=%l/%L\ "line fraction
 set statusline+=[col\ %v]\ "column number
 " set statusline+=%p%% "percent
 
-"always set status line
-set laststatus=2
+" global statusline
+set laststatus=3
 
 set hlsearch
 set incsearch
@@ -227,7 +249,7 @@ set wildignore=*.pyc,*.swp,*.class,*.aux,*.bbl,*.blg,*.fls,*.fdb_latexmk,.git,.g
 " set scrolloff=3 "Start scrolling 3 lines from border
 
 " don't save lowercase marks
-set shada=!,'0,<50,s10,h,'0
+" set shada=!,'0,<50,s10,h,'0
 
 " incremental search and replace - nvim only
 set inccommand=nosplit
@@ -268,6 +290,9 @@ set guicursor=n-v-sm:block,i-c-ci-ve:ver25,r-cr-o:hor20
 nnoremap <expr> j (v:count == 0 ? 'gj' : "m'" . v:count . 'j')
 nnoremap <expr> k (v:count == 0 ? 'gk' : "m'" . v:count . 'k')
 
+nnoremap <silent> ]] :bn<cr>
+nnoremap <silent> [[ :bp<cr>
+
 vnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 vnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 
@@ -279,7 +304,7 @@ inoremap <expr> <cr> pumvisible() ? '<c-y>' : '<cr>'
 
 " define this wildcard operator
 " inoremap `` <++>
-" inoremap <leader><leader> <esc>/<++><cr>"_ca<<c-o>:nohl<cr>
+inoremap <leader><leader> <esc>/<++><cr>"_ca<<c-o>:nohl<cr>
 
 " basic emacs keys that I've gotten used to having
 inoremap <c-f> <right>

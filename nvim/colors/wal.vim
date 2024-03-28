@@ -116,13 +116,13 @@ endfunction
 call SetHighlight("Boolean", "NONE", s:yellow)
 call SetHighlight("Character", "NONE", s:green)
 call SetHighlight("ColorColumn", s:blue, s:bg)
-call SetHighlight("Comment", "NONE", s:grey)
+call SetHighlight("Comment", "NONE", s:grey, "cterm=italic")
 call SetHighlight("Conditional", "NONE", s:purple)
 call SetHighlight("Constant", "NONE", s:cyan)
 call SetHighlight("Cursor", "NONE", s:bg)
 call SetHighlight("CursorColumn", s:grey, s:grey)
 call SetHighlight("CursorLine", s:green, s:bg)
-call SetHighlight("CursorLineNr", "NONE", s:yellow)
+call SetHighlight("CursorLineNr", "NONE", s:yellow, "cterm=NONE")
 call SetHighlight("Define", "NONE", s:purple)
 call SetHighlight("Delimiter", "NONE", s:purple)
 call SetHighlight("DiffAdd", "NONE", s:green)
@@ -237,7 +237,7 @@ call SetHighlight("signColumn", "NONE", s:blue)
 " call SetHighlight("TSUri", "NONE", s:green)
 
 " Language and Plugin specific stuff
-" hi IndentBlanklineChar cterm=nocombine ctermbg=NONE ctermfg=8
+hi IndentBlanklineChar cterm=nocombine ctermbg=NONE ctermfg=8
 
 hi Typedef ctermbg=NONE ctermfg=3
 hi vimUserCommand ctermbg=NONE ctermfg=1 cterm=BOLD
